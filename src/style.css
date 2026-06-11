@@ -1,0 +1,184 @@
+/* ============ WEATHERED ARCADE AESTHETIC ============ */
+* { box-sizing: border-box; }
+html, body {
+  margin: 0; padding: 0;
+  width: 100%; height: 100%;
+  overflow: hidden;
+  background: #0d0a08;
+  color: #e8d8b8;
+  font-family: 'Press Start 2P', monospace;
+  cursor: crosshair; /* Fallback cursor */
+  user-select: none;
+}
+
+#video {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+  filter: brightness(0.45) contrast(1.1) saturate(0.6) sepia(0.2);
+  z-index: 1;
+}
+
+/* Vignette overlay for retro cabinet curvature shading */
+.vignette {
+  position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  background: radial-gradient(ellipse at center, rgba(0,0,0,0) 40%, rgba(0,0,0,0.7) 100%);
+}
+
+canvas {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+}
+
+#poseCanvas { z-index: 3; opacity: 0; }
+#gameCanvas { z-index: 4; }
+#uiCanvas   { z-index: 5; }
+
+/* Thin CRT dark scanlines */
+.scanlines {
+  position: fixed; inset: 0;
+  z-index: 50; pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0,0,0,0.0) 0px,
+    rgba(0,0,0,0.0) 2px,
+    rgba(0,0,0,0.25) 3px,
+    rgba(0,0,0,0.25) 4px
+  );
+  mix-blend-mode: multiply;
+}
+
+/* Faint horizontal cathode ray band that slowly moves down */
+.crtband {
+  position: fixed; inset: 0; z-index: 51; pointer-events: none;
+  background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0) 100%);
+  background-size: 100% 16px;
+  animation: crtdrift 10s linear infinite;
+  opacity: 0.45;
+}
+
+@keyframes crtdrift {
+  0%   { background-position: 0 -200px; }
+  100% { background-position: 0 1080px; }
+}
+
+/* Screen shake effect triggered on player hit */
+.shake {
+  animation: screenshake 0.18s cubic-bezier(.36,.07,.19,.97) both;
+  transform: translate3d(0, 0, 0);
+}
+
+@keyframes screenshake {
+  10%, 90% { transform: translate3d(-4px, 0, 0); }
+  20%, 80% { transform: translate3d(6px, -4px, 0); }
+  30%, 50%, 70% { transform: translate3d(-8px, 6px, 0); }
+  40%, 60% { transform: translate3d(8px, -6px, 0); }
+}
+
+#startOverlay {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  background: rgba(10, 8, 6, 0.94);
+  z-index: 999;
+  text-align: center;
+  user-select: none;
+}
+
+#startOverlay h1 {
+  font-size: 50px;
+  letter-spacing: 8px;
+  color: #e8d8b8;
+  margin: 0 0 16px 0;
+  text-shadow: 4px 4px 0 #2a1f18;
+}
+
+#startOverlay h2 {
+  font-size: 12px;
+  color: #8a7a5e;
+  margin: 0 0 45px 0;
+  letter-spacing: 4px;
+}
+
+#startOverlay p {
+  font-size: 12px;
+  color: #c8b890;
+  margin: 8px 0;
+  letter-spacing: 2px;
+  line-height: 1.6;
+}
+
+.blink {
+  margin-top: 30px;
+  font-size: 14px;
+  color: #8a7a5e;
+  letter-spacing: 1px;
+}
+
+/* Modernized Arcade Mode Selector Buttons */
+.mode-buttons {
+  display: flex;
+  gap: 25px;
+  margin-top: 45px;
+}
+
+.btn-arcade {
+  background: transparent;
+  border: 3px solid #E8C16A;
+  color: #E8C16A;
+  padding: 16px 28px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 12px;
+  letter-spacing: 2px;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.08s ease;
+  text-shadow: 2px 2px 0px rgba(0,0,0,0.5);
+  box-shadow: 0 6px 0 #4a3a2a, 0 6px 15px rgba(232, 193, 106, 0.25);
+  position: relative;
+  top: 0;
+}
+
+.btn-arcade:hover {
+  background: #E8C16A;
+  color: #0d0a08;
+  box-shadow: 0 6px 0 #8a7a5e, 0 6px 25px rgba(232, 193, 106, 0.45);
+}
+
+.btn-arcade:active {
+  top: 4px;
+  box-shadow: 0 2px 0 #4a3a2a, 0 2px 10px rgba(232, 193, 106, 0.3);
+}
+
+.btn-arcade.green-theme {
+  border-color: #7EC8A4;
+  color: #7EC8A4;
+  box-shadow: 0 6px 0 #3b5c4b, 0 6px 15px rgba(126, 200, 164, 0.25);
+}
+
+.btn-arcade.green-theme:hover {
+  background: #7EC8A4;
+  color: #0d0a08;
+  box-shadow: 0 6px 0 #5b826b, 0 6px 25px rgba(126, 200, 164, 0.45);
+}
+
+.btn-arcade.green-theme:active {
+  top: 4px;
+  box-shadow: 0 2px 0 #3b5c4b, 0 2px 10px rgba(126, 200, 164, 0.3);
+}
+
+/* Metal framing around viewport */
+.frame {
+  position: fixed;
+  inset: 8px;
+  z-index: 60;
+  pointer-events: none;
+  border: 4px solid #3a2f24;
+  box-shadow:
+    inset 0 0 0 2px #5a4a3a,
+    inset 0 0 40px rgba(0,0,0,0.6);
+}
